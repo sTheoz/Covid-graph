@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>PerfChecker</title>
+  </head>
+  <body>
+    <div class="container">
+        <div class="pt-5 text-center">
+          <img class="d-block mx-auto mb-4" src="https://content.hartemis.com/graphics/logos/logo.svg" alt="" width="150" height="150">
+          <h2>Vérifiez les performances de vos bases de données</h2>
+          <div class="row mt-5">
+                <div class="col-1"></div>
+                <div class="col-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/fr/thumb/4/45/MongoDB-Logo.svg/1280px-MongoDB-Logo.svg.png" width="100%" />
+                </div>
+                <div class="col-2">
+                    <img src="data:image/png;base64,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" width="100%" />
+                </div>
+                <div class="col-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/fr/thumb/6/6b/Redis_Logo.svg/1200px-Redis_Logo.svg.png" width="100%" />
+                </div>
+                <div class="col-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Elasticsearch_logo.svg/1280px-Elasticsearch_logo.svg.png" width="100%" />
+                </div>
+                <div class="col-2">
+                    <img src="https://dist.neo4j.com/wp-content/uploads/20140926224303/neo4j_logo-facebook.png" width="100%" />
+                </div>
+                <div class="col-1"></div>
+          </div>
+          <!-- <p class="lead">Avec notre solution innovante, pour seulement 0.00009 yen, vous pouvez tester les performances de vos différentes bases de données (Photo non contractuelle).</p> -->
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-md-4 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3 text-center">
+              <span class="w-100">Notre boss</span>
+            </h4>
+            <ul class="list-group mb-3">
+              <li class="list-group-item d-flex justify-content-between lh-condensed p-0">
+                <img src="https://media.tenor.com/images/52c80bffe2f2675700e4397d25071ae3/tenor.gif" alt="Rickroll"  width="100%"/>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-8 order-md-1">
+            <h4 class="mb-3">Votre fichier de données (.csv)</h4>
+            <form class="needs-validation" action="/upload" method="post" enctype="multipart/form-data">
+                <div class="input-group is-invalid">
+                    <div class="custom-file">
+                      <input type="file" name="file" class="custom-file-input" id="validatedInputGroupCustomFile" required>
+                      <label class="custom-file-label" for="validatedInputGroupCustomFile">Choisissez un fichier...</label>
+                    </div>
+                </div>
+                <hr class="mb-4">
+                <button class="btn btn-primary btn-lg btn-block" type="submit">Envoyer</button>
+            </form>
+          </div>
+        </div>
+      
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+          <p class="mb-1">© 2020 Fartemis</p>
+        </footer>
+      </div>
+  </body>
+</html>

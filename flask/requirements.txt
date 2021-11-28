@@ -1,0 +1,7 @@
+flask
+redis
+elasticsearch
+neo4j
+pymongo
+psycopg2
+pandas

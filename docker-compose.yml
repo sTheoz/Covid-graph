@@ -1,0 +1,145 @@
+version: "3.8"
+services:
+
+  odfe-node1:
+    image: amazon/opendistro-for-elasticsearch:1.11.0
+    container_name: odfe-node1
+    environment:
+      - cluster.name=odfe-cluster
+      - node.name=odfe-node1
+      - discovery.seed_hosts=odfe-node1,odfe-node2
+      - cluster.initial_master_nodes=odfe-node1,odfe-node2
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      #- "ES_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the Elasticsearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - ./opendistro/es-data-01:/usr/share/elasticsearch/data
+    #  - ./opendistro/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    expose:
+      - "9200"
+    networks:
+      - odfe-net
+
+  odfe-node2:
+    image: amazon/opendistro-for-elasticsearch:1.11.0
+    container_name: odfe-node2
+    environment:
+      - cluster.name=odfe-cluster
+      - node.name=odfe-node2
+      - discovery.seed_hosts=odfe-node1,odfe-node2
+      - cluster.initial_master_nodes=odfe-node1,odfe-node2
+      - bootstrap.memory_lock=true
+      #- "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - ./opendistro/es-data-02:/usr/share/elasticsearch/data
+    #  - ./opendistro/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - odfe-net
+
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:1.11.0
+    container_name: odfe-kibana
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_URL: https://odfe-node1:9200
+      ELASTICSEARCH_HOSTS: https://odfe-node1:9200
+    #volumes:
+    #  - ./opendistro/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - odfe-net
+
+  # docker exec -ti -u postgres pgsql /bin/bash
+  # psql
+  # > select * from temp;
+  pgsql: # Utiliser psql au sein du conteneur
+    image: postgres:latest
+    container_name: pgsql
+    #restart: always
+    #user: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    expose:
+      - "5432"
+    volumes:
+      - ./pgsql/data:/var/lib/postgresql/data
+    networks:
+      - odfe-net
+
+  # su postgres
+  # psql
+  # > create database totoro;
+  # > \c totoro;
+  # > CREATE TABLE accounts ( user_id serial PRIMARY KEY, username VARCHAR ( 50 ) UNIQUE NOT NULL, password VARCHAR ( 50 ) NOT NULL, email VARCHAR ( 255 ) UNIQUE NOT NULL, created_on TIMESTAMP NOT NULL, last_login TIMESTAMP );
+  # > SELECT * FROM information_schema.tables WHERE table_schema = 'public';
+    
+  # mongo -u root -p mongodb
+  # > use temp_database
+  # > db.temp_collection.find()
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    volumes:
+      - ./mongodb/data:/data/db
+    networks:
+      - odfe-net
+
+  # redis-cli
+  # > 
+  redis:
+    image: "redis:latest"
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis/data:/data
+    networks:
+      - odfe-net
+  # redis-cli
+  # > select 0
+  # > set prenom lucas
+  # > get prenom
+  flask:
+    build:
+      context: flask
+      dockerfile: Dockerfile
+    container_name: flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./flask/uploads:/usr/src/app/uploads
+    networks:
+      - odfe-net
+
+networks:
+  odfe-net:
